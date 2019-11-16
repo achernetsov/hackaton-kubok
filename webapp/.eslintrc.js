@@ -28,7 +28,8 @@ module.exports = {
     '__statics': true,
     'process': true,
     'Capacitor': true,
-    'chrome': true
+    'chrome': true,
+    'console': true,
   },
 
   // add your custom rules here
