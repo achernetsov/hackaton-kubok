@@ -3,6 +3,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 package org.example;
 
+import org.example.ledgerapi.State;
 import org.hyperledger.fabric.contract.Context;
 import org.hyperledger.fabric.contract.ContractInterface;
 import org.hyperledger.fabric.contract.annotation.*;
@@ -53,13 +54,15 @@ public class CompletionActContract implements ContractInterface {
      * Issue completion act
      */
     @Transaction
-    public CompletionAct issue(CompletionActContext ctx, String executor, String customer, String contractNum,
-                               Double SLA, Double moneyAmount) {
-        System.out.printf("Invoke method CompletionActContract.issue: context = %s, executor = %s, customer = %s, " +
-                "contractNum = %s, SLA = %.2f, moneyAmount = %.2f", ctx, executor, customer, contractNum, SLA, moneyAmount);
+    public CompletionAct issue(CompletionActContext ctx, String name, String executor, String customer,
+                               String contractNum, Double SLA, Double moneyAmountPlan, Double moneyAmountFact) {
+        System.out.printf("Invoke method CompletionActContract.issue: context = %s, name = %s, executor = %s, customer = %s, " +
+                        "contractNum = %s, SLA = %.2f, moneyAmountPlan = %.2f, moneyAmountFact = %.2f",
+                ctx, name, executor, customer, contractNum, SLA, moneyAmountPlan, moneyAmountFact);
 
         // create an instance of the paper
-        CompletionAct act = CompletionAct.createInstance(executor, customer, contractNum, SLA, moneyAmount, "");
+        CompletionAct act = CompletionAct.createInstance(name, executor, customer, contractNum, SLA, moneyAmountPlan,
+                moneyAmountFact, "");
 
         // Smart contract, rather than paper, moves paper into ISSUED state
         act.setIssued();
@@ -71,5 +74,150 @@ public class CompletionActContract implements ContractInterface {
 
         // Must return a serialized paper to caller of smart contract
         return act;
+    }
+
+    @Transaction
+    public CompletionAct customerAgree(CompletionActContext ctx, String uuid) {
+
+        // Retrieve the current paper using key fields provided
+        String paperKey = State.makeKey(new String[]{uuid});
+        CompletionAct act = ctx.actList.getAct(paperKey);
+
+        // Validate current owner
+        if (!act.getState().equals(CompletionAct.ISSUED)) {
+            throw new RuntimeException("Act uuid = " + uuid + " is not status ISSUED. It status = " + act.getState());
+        }
+
+        if (act.isIssued()) {
+            act.setCustomerAgreed();
+        }
+
+        // Update the paper
+        ctx.actList.updateAct(act);
+        return act;
+    }
+
+    @Transaction
+    public CompletionAct customerRefuse(CompletionActContext ctx, String uuid, String rejectReason) {
+
+        // Retrieve the current paper using key fields provided
+        String paperKey = State.makeKey(new String[]{uuid});
+        CompletionAct act = ctx.actList.getAct(paperKey);
+
+        // Validate current owner
+        if (!act.getState().equals(CompletionAct.ISSUED)) {
+            throw new RuntimeException("Act uuid = " + uuid + " is not status ISSUED. It status = " + act.getState());
+        }
+        if (rejectReason == null) {
+            throw new IllegalArgumentException("Not set reject reason for act uuid = " + uuid);
+        }
+
+        if (act.isIssued()) {
+            act.setCustomerRefused().setRejectReason(rejectReason);
+            act.setClosed();
+        }
+
+        // Update the paper
+        ctx.actList.updateAct(act);
+        return act;
+    }
+
+    @Transaction
+    public CompletionAct controlAgree(CompletionActContext ctx, String uuid) {
+
+        // Retrieve the current paper using key fields provided
+        String paperKey = State.makeKey(new String[]{uuid});
+        CompletionAct act = ctx.actList.getAct(paperKey);
+
+        // Validate current owner
+        if (!act.getState().equals(CompletionAct.CUSTOMER_AGREED)) {
+            throw new RuntimeException("Act uuid = " + uuid + " is not status CUSTOMER_AGREED. It status = " + act.getState());
+        }
+
+        if (act.isCustomerAgreed()) {
+            act.setControlAgreed();
+        }
+
+        // Update the paper
+        ctx.actList.updateAct(act);
+        return act;
+    }
+
+    @Transaction
+    public CompletionAct controlRefuse(CompletionActContext ctx, String uuid, String rejectReason) {
+
+        // Retrieve the current paper using key fields provided
+        String paperKey = State.makeKey(new String[]{uuid});
+        CompletionAct act = ctx.actList.getAct(paperKey);
+
+        // Validate current owner
+        if (!act.getState().equals(CompletionAct.CUSTOMER_AGREED)) {
+            throw new RuntimeException("Act uuid = " + uuid + " is not status CUSTOMER_AGREED. It status = " + act.getState());
+        }
+        if (rejectReason == null) {
+            throw new IllegalArgumentException("Not set reject reason for act uuid = " + uuid);
+        }
+
+        if (act.isCustomerAgreed()) {
+            act.setControlRefused().setRejectReason(rejectReason);
+            act.setClosed();
+        }
+
+        // Update the paper
+        ctx.actList.updateAct(act);
+        return act;
+    }
+
+    @Transaction
+    public CompletionAct accountingAgree(CompletionActContext ctx, String uuid) {
+
+        // Retrieve the current paper using key fields provided
+        String paperKey = State.makeKey(new String[]{uuid});
+        CompletionAct act = ctx.actList.getAct(paperKey);
+
+        // Validate current owner
+        if (!act.getState().equals(CompletionAct.CONTROL_AGREED)) {
+            throw new RuntimeException("Act uuid = " + uuid + " is not status CONTROL_AGREED. It status = " + act.getState());
+        }
+
+        if (act.isControlAgreed()) {
+            act.setAccountingAgreed();
+            act.setClosed();
+        }
+
+        // Update the paper
+        ctx.actList.updateAct(act);
+        return act;
+    }
+
+    @Transaction
+    public CompletionAct accountingRefuse(CompletionActContext ctx, String uuid, String rejectReason) {
+
+        // Retrieve the current paper using key fields provided
+        String paperKey = State.makeKey(new String[]{uuid});
+        CompletionAct act = ctx.actList.getAct(paperKey);
+
+        // Validate current owner
+        if (!act.getState().equals(CompletionAct.CONTROL_AGREED)) {
+            throw new RuntimeException("Act uuid = " + uuid + " is not status CONTROL_AGREED. It status = " + act.getState());
+        }
+        if (rejectReason == null) {
+            throw new IllegalArgumentException("Not set reject reason for act uuid = " + uuid);
+        }
+
+        if (act.isControlAgreed()) {
+            act.setAccountingRefused().setRejectReason(rejectReason);
+            act.setClosed();
+        }
+
+        // Update the paper
+        ctx.actList.updateAct(act);
+        return act;
+    }
+
+    @Transaction
+    public CompletionAct getAct(CompletionActContext ctx, String uuid) {
+        String paperKey = State.makeKey(new String[]{uuid});
+        return ctx.actList.getAct(paperKey);
     }
 }

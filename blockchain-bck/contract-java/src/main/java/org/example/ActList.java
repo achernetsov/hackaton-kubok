@@ -7,6 +7,8 @@ package org.example;
 import org.example.ledgerapi.StateList;
 import org.hyperledger.fabric.contract.Context;
 
+import java.util.List;
+
 public class ActList {
 
     private StateList stateList;

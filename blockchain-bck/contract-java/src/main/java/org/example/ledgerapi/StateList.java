@@ -3,6 +3,8 @@ package org.example.ledgerapi;
 import org.example.ledgerapi.impl.StateListImpl;
 import org.hyperledger.fabric.contract.Context;
 
+import java.util.List;
+
 public interface StateList {
 
     /*
