@@ -7,6 +7,8 @@ package org.example;
 import org.example.ledgerapi.StateList;
 import org.hyperledger.fabric.contract.Context;
 
+import java.util.List;
+
 public class ActList {
 
     private StateList stateList;
@@ -16,6 +18,7 @@ public class ActList {
     }
 
     public ActList addAct(CompletionAct act) {
+        System.out.printf("Invoke ActList.addAct: act = %s", act);
         stateList.addState(act);
         return this;
     }

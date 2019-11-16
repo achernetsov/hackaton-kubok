@@ -1,6 +1,7 @@
 plugins {
     id 'com.github.johnrengelman.shadow' version '2.0.3'
     id 'java'
+    id 'distribution'
 }
 
 version '0.0.1'
@@ -11,8 +12,8 @@ repositories {
 
     mavenLocal()
     mavenCentral()
-    maven { 
-        url 'https://jitpack.io' 
+    maven {
+        url 'https://jitpack.io'
     }
     maven {
         url "https://nexus.hyperledger.org/content/repositories/snapshots/"
@@ -47,5 +48,5 @@ test {
 
 
 tasks.withType(JavaCompile) {
-  options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation" << "-parameters"
+    options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation" << "-parameters"
 }

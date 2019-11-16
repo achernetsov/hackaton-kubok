@@ -1,14 +1,14 @@
 /*
- * SPDX-License-Identifier:
+ *  SPDX-License-Identifier: Apache-2.0
  */
 
-package org.example;
+package org.papernet;
 
-import org.example.ledgerapi.State;
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
 import org.json.JSONObject;
 import org.json.JSONPropertyIgnore;
+import org.papernet.ledgerapi.State;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -24,42 +24,11 @@ public class CompletionAct extends State {
     public final static String CUSTOMER_REFUSED = "CUSTOMER_REFUSED";
     public final static String CONTROL_AGREED = "CONTROL_AGREED";
     public final static String CONTROL_REFUSED = "CONTROL_REFUSED";
-    public final static String ACCOUNTING_AGREED = "ACCOUNTING_AGREED";
-    public final static String ACCOUNTING_REFUSED = "ACCOUNTING_REFUSED";
+    public final static String PAID = "PAID";
     public final static String CLOSED = "CLOSED";
 
     @Property()
     private String state = "";
-
-    @Property()
-    private UUID uuid;
-
-    @Property()
-    private LocalDateTime dateTime;
-
-    @Property()
-    private String name;
-
-    @Property()
-    private String executor;
-
-    @Property()
-    private String customer;
-
-    @Property()
-    private String contractNum;
-
-    @Property()
-    private Double SLA;
-
-    @Property()
-    private Double moneyAmountPlan;
-
-    @Property()
-    private Double moneyAmountFact;
-
-    @Property()
-    private String rejectReason;
 
     public String getState() {
         return state;
@@ -96,13 +65,8 @@ public class CompletionAct extends State {
     }
 
     @JSONPropertyIgnore()
-    public boolean isAccountingAgreed() {
-        return this.state.equals(CompletionAct.ACCOUNTING_AGREED);
-    }
-
-    @JSONPropertyIgnore()
-    public boolean isAccountingRefused() {
-        return this.state.equals(CompletionAct.ACCOUNTING_REFUSED);
+    public boolean isPaid() {
+        return this.state.equals(CompletionAct.PAID);
     }
 
     @JSONPropertyIgnore()
@@ -135,13 +99,8 @@ public class CompletionAct extends State {
         return this;
     }
 
-    public CompletionAct setAccountingAgreed() {
-        this.state = CompletionAct.ACCOUNTING_AGREED;
-        return this;
-    }
-
-    public CompletionAct setAccountingRefused() {
-        this.state = CompletionAct.ACCOUNTING_REFUSED;
+    public CompletionAct sedPaid() {
+        this.state = CompletionAct.PAID;
         return this;
     }
 
@@ -149,6 +108,27 @@ public class CompletionAct extends State {
         this.state = CompletionAct.CLOSED;
         return this;
     }
+
+    @Property()
+    private UUID uuid;
+
+    @Property()
+    private LocalDateTime dateTime;
+
+    @Property()
+    private String executor;
+
+    @Property()
+    private String customer;
+
+    @Property()
+    private String contractNum;
+
+    @Property()
+    private Double SLA;
+
+    @Property()
+    private Double moneyAmount;
 
     public CompletionAct() {
         super();
@@ -175,15 +155,6 @@ public class CompletionAct extends State {
 
     public CompletionAct setExecutor(String executor) {
         this.executor = executor;
-        return this;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public CompletionAct setName(String name) {
-        this.name = name;
         return this;
     }
 
@@ -214,49 +185,27 @@ public class CompletionAct extends State {
         return this;
     }
 
-    public Double getMoneyAmountPlan() {
-        return moneyAmountPlan;
+    public Double getMoneyAmount() {
+        return moneyAmount;
     }
 
-    public CompletionAct setMoneyAmountPlan(Double moneyAmountPlan) {
-        this.moneyAmountPlan = moneyAmountPlan;
-        return this;
-    }
-
-    public Double getMoneyAmountFact() {
-        return moneyAmountFact;
-    }
-
-    public CompletionAct setMoneyAmountFact(Double moneyAmountFact) {
-        this.moneyAmountFact = moneyAmountFact;
-        return this;
-    }
-
-    public String getRejectReason() {
-        return rejectReason;
-    }
-
-    public CompletionAct setRejectReason(String rejectReason) {
-        this.rejectReason = rejectReason;
+    public CompletionAct setMoneyAmount(Double moneyAmount) {
+        this.moneyAmount = moneyAmount;
         return this;
     }
 
     @Override
     public String toString() {
         return "CompletionAct{" +
-                "state='" + state + '\'' +
-                ", uuid=" + uuid +
-                ", dateTime=" + dateTime +
-                ", name='" + name + '\'' +
-                ", executor='" + executor + '\'' +
-                ", customer='" + customer + '\'' +
-                ", contractNum='" + contractNum + '\'' +
-                ", SLA=" + SLA +
-                ", moneyAmountPlan=" + moneyAmountPlan +
-                ", moneyAmountFact=" + moneyAmountFact +
-                ", rejectReason='" + rejectReason + '\'' +
-                ", rejectReason='" + rejectReason + '\'' +
-                ", key='" + key + '\'' +
+                "state='" + this.getState() + '\'' +
+                ", uuid=" + this.getUuid() +
+                ", dateTime=" + this.getDateTime() +
+                ", executor='" + this.getExecutor() + '\'' +
+                ", customer='" + this.getCustomer() + '\'' +
+                ", contractNum='" + this.getContractNum() + '\'' +
+                ", SLA=" + this.getSLA() +
+                ", moneyAmount=" + this.getMoneyAmount() +
+                ", key='" + this.getKey() + '\'' +
                 '}';
     }
 
@@ -269,14 +218,13 @@ public class CompletionAct extends State {
         JSONObject json = new JSONObject(new String(data, UTF_8));
 
         String state = json.getString("state");
-        String name = json.getString("name");
         String executor = json.getString("executor");
         String customer = json.getString("customer");
         String contractNum = json.getString("contractNum");
         Double SLA = json.getDouble("SLA");
-        Double moneyAmountPlan = json.getDouble("moneyAmountPlan");
-        Double moneyAmountFact = json.getDouble("moneyAmountFact");
-        return createInstance(name, executor, customer, contractNum, SLA, moneyAmountPlan, moneyAmountFact, state);
+        Double moneyAmount = json.getDouble("moneyAmount");
+
+        return createInstance(executor, customer, contractNum, SLA, moneyAmount, state);
     }
 
     public static byte[] serialize(CompletionAct paper) {
@@ -286,13 +234,10 @@ public class CompletionAct extends State {
     /**
      * Factory method to create a commercial paper object
      */
-    public static CompletionAct createInstance(String name, String executor, String customer, String contractNum,
-                                               Double SLA, Double moneyAmountPlan, Double moneyAmountFact, String state) {
+    public static CompletionAct createInstance(String executor, String customer, String contractNum,
+                                               Double SLA, Double moneyAmount, String state) {
         System.out.println("Invoke method CompletionAct.createInstance");
-        return new CompletionAct()
-                .setName(name)
-                .setExecutor(executor).setCustomer(customer).setContractNum(contractNum)
-                .setSLA(SLA).setMoneyAmountPlan(moneyAmountPlan).setMoneyAmountFact(moneyAmountFact)
-                .setKey().setState(state);
+        return new CompletionAct().setExecutor(executor).setCustomer(customer).setContractNum(contractNum).setSLA(SLA)
+                .setMoneyAmount(moneyAmount).setKey().setState(state);
     }
 }

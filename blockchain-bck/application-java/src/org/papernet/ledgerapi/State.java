@@ -1,7 +1,7 @@
 /*
 SPDX-License-Identifier: Apache-2.0
 */
-package org.example.ledgerapi;
+package org.papernet.ledgerapi;
 
 import org.json.JSONObject;
 
@@ -28,7 +28,6 @@ public class State {
     }
 
     public String[] getSplitKey() {
-        System.out.println("Invoke State.getSplitKey(): this.key = " + key);
         return State.splitKey(this.key);
     }
 
@@ -54,7 +53,6 @@ public class State {
     }
 
     public static String[] splitKey(String key) {
-        System.out.println("");
         System.out.println("Splittin gkey " + key + "   " + java.util.Arrays.asList(key.split(":")));
         return key.split(":");
     }
