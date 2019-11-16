@@ -1,7 +1,7 @@
 /*
 SPDX-License-Identifier: Apache-2.0
 */
-package org.example.ledgerapi;
+package org.papernet.ledgerapi;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -40,7 +40,6 @@ public class State {
      */
     public static byte[] serialize(Object object) {
         String jsonStr = new JSONObject(object).toString();
-        System.out.println(jsonStr);
         return jsonStr.getBytes(UTF_8);
     }
 
