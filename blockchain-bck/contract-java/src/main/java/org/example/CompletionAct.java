@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import org.json.JSONPropertyIgnore;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -152,8 +153,6 @@ public class CompletionAct extends State {
 
     public CompletionAct() {
         super();
-        this.uuid = UUID.randomUUID();
-        this.dateTime = LocalDateTime.now();
     }
 
     public CompletionAct setKey() {
@@ -165,8 +164,18 @@ public class CompletionAct extends State {
         return uuid;
     }
 
+    public CompletionAct setUuid(String uuid) {
+        this.uuid = UUID.fromString(uuid);
+        return this;
+    }
+
     public LocalDateTime getDateTime() {
         return dateTime;
+    }
+
+    public CompletionAct setDateTime(String dateTime) {
+        this.dateTime = LocalDateTime.parse(dateTime);
+        return this;
     }
 
     public String getExecutor() {
@@ -255,7 +264,6 @@ public class CompletionAct extends State {
                 ", moneyAmountPlan=" + moneyAmountPlan +
                 ", moneyAmountFact=" + moneyAmountFact +
                 ", rejectReason='" + rejectReason + '\'' +
-                ", rejectReason='" + rejectReason + '\'' +
                 ", key='" + key + '\'' +
                 '}';
     }
@@ -266,8 +274,17 @@ public class CompletionAct extends State {
      * @param {Buffer} data to form back into the object
      */
     public static CompletionAct deserialize(byte[] data) {
-        JSONObject json = new JSONObject(new String(data, UTF_8));
+        String inputString = new String(data, UTF_8);
+        if (inputString.isEmpty()) {
+            throw new IllegalArgumentException("CompletionAct.deserialize: input data is empty (not JSON)");
+        }
 
+        System.out.println("CompletionAct.deserialize: " + inputString);
+
+        JSONObject json = new JSONObject(inputString);
+
+        String uuid = json.getString("uuid");
+        String dateTime = json.getString("dateTime");
         String state = json.getString("state");
         String name = json.getString("name");
         String executor = json.getString("executor");
@@ -276,7 +293,10 @@ public class CompletionAct extends State {
         Double SLA = json.getDouble("SLA");
         Double moneyAmountPlan = json.getDouble("moneyAmountPlan");
         Double moneyAmountFact = json.getDouble("moneyAmountFact");
-        return createInstance(name, executor, customer, contractNum, SLA, moneyAmountPlan, moneyAmountFact, state);
+        String rejectReason = json.getString("rejectReason");
+
+        return createInstance(uuid, dateTime, name, executor, customer, contractNum, SLA, moneyAmountPlan,
+                moneyAmountFact, rejectReason, state);
     }
 
     public static byte[] serialize(CompletionAct paper) {
@@ -286,13 +306,16 @@ public class CompletionAct extends State {
     /**
      * Factory method to create a commercial paper object
      */
-    public static CompletionAct createInstance(String name, String executor, String customer, String contractNum,
-                                               Double SLA, Double moneyAmountPlan, Double moneyAmountFact, String state) {
+    public static CompletionAct createInstance(String uuid, String dateTime, String name, String executor, String customer,
+                                               String contractNum, Double SLA, Double moneyAmountPlan, Double moneyAmountFact,
+                                               String rejectReason, String state) {
         System.out.println("Invoke method CompletionAct.createInstance");
         return new CompletionAct()
+                .setUuid(uuid == null ? UUID.randomUUID().toString() : uuid)
+                .setDateTime(dateTime == null ? LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME) : dateTime)
                 .setName(name)
                 .setExecutor(executor).setCustomer(customer).setContractNum(contractNum)
                 .setSLA(SLA).setMoneyAmountPlan(moneyAmountPlan).setMoneyAmountFact(moneyAmountFact)
-                .setKey().setState(state);
+                .setRejectReason(rejectReason).setKey().setState(state);
     }
 }

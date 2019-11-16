@@ -61,8 +61,8 @@ public class CompletionActContract implements ContractInterface {
                 ctx, name, executor, customer, contractNum, SLA, moneyAmountPlan, moneyAmountFact);
 
         // create an instance of the paper
-        CompletionAct act = CompletionAct.createInstance(name, executor, customer, contractNum, SLA, moneyAmountPlan,
-                moneyAmountFact, "");
+        CompletionAct act = CompletionAct.createInstance(null, null, name, executor, customer, contractNum,
+                SLA, moneyAmountPlan, moneyAmountFact, "", "");
 
         // Smart contract, rather than paper, moves paper into ISSUED state
         act.setIssued();
@@ -78,6 +78,7 @@ public class CompletionActContract implements ContractInterface {
 
     @Transaction
     public CompletionAct customerAgree(CompletionActContext ctx, String uuid) {
+        System.out.printf("Invoke method CompletionActContract.customerAgree: context = %s, uuid = %s", ctx, uuid);
 
         // Retrieve the current paper using key fields provided
         String paperKey = State.makeKey(new String[]{uuid});
@@ -99,6 +100,8 @@ public class CompletionActContract implements ContractInterface {
 
     @Transaction
     public CompletionAct customerRefuse(CompletionActContext ctx, String uuid, String rejectReason) {
+        System.out.printf("Invoke method CompletionActContract.customerRefuse: context = %s, uuid = %s, rejectReason = %s",
+                ctx, uuid, rejectReason);
 
         // Retrieve the current paper using key fields provided
         String paperKey = State.makeKey(new String[]{uuid});
@@ -124,6 +127,7 @@ public class CompletionActContract implements ContractInterface {
 
     @Transaction
     public CompletionAct controlAgree(CompletionActContext ctx, String uuid) {
+        System.out.printf("Invoke method CompletionActContract.controlAgree: context = %s, uuid = %s", ctx, uuid);
 
         // Retrieve the current paper using key fields provided
         String paperKey = State.makeKey(new String[]{uuid});
@@ -145,6 +149,8 @@ public class CompletionActContract implements ContractInterface {
 
     @Transaction
     public CompletionAct controlRefuse(CompletionActContext ctx, String uuid, String rejectReason) {
+        System.out.printf("Invoke method CompletionActContract.controlRefuse: context = %s, uuid = %s, rejectReason = %s",
+                ctx, uuid, rejectReason);
 
         // Retrieve the current paper using key fields provided
         String paperKey = State.makeKey(new String[]{uuid});
@@ -170,6 +176,7 @@ public class CompletionActContract implements ContractInterface {
 
     @Transaction
     public CompletionAct accountingAgree(CompletionActContext ctx, String uuid) {
+        System.out.printf("Invoke method CompletionActContract.accountingAgree: context = %s, uuid = %s", ctx, uuid);
 
         // Retrieve the current paper using key fields provided
         String paperKey = State.makeKey(new String[]{uuid});
@@ -192,6 +199,8 @@ public class CompletionActContract implements ContractInterface {
 
     @Transaction
     public CompletionAct accountingRefuse(CompletionActContext ctx, String uuid, String rejectReason) {
+        System.out.printf("Invoke method CompletionActContract.controlRefuse: context = %s, uuid = %s, rejectReason = %s",
+                ctx, uuid, rejectReason);
 
         // Retrieve the current paper using key fields provided
         String paperKey = State.makeKey(new String[]{uuid});
@@ -215,7 +224,6 @@ public class CompletionActContract implements ContractInterface {
         return act;
     }
 
-    @Transaction
     public CompletionAct getAct(CompletionActContext ctx, String uuid) {
         String paperKey = State.makeKey(new String[]{uuid});
         return ctx.actList.getAct(paperKey);

@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 package org.magnetocorp;
 
 import org.hyperledger.fabric.gateway.*;
-import org.hyperledger.fabric.sdk.QueryByChaincodeRequest;
 import org.papernet.CompletionAct;
 
 import java.io.IOException;
@@ -14,7 +13,7 @@ import java.nio.file.Paths;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
-public class Issue {
+public class ControlAgree {
 
     private static final String ENVKEY = "CONTRACT_NAME";
 
@@ -53,8 +52,7 @@ public class Issue {
 
                 // Issue commercial paper
                 System.out.println("Submit commercial paper issue transaction.");
-                byte[] response = contract.submitTransaction("issue", "test completion act №1", "Naprasnii trud", "No money",
-                        "123456", "87.0", "19293.17", "15038.62");
+                byte[] response = contract.submitTransaction("controlAgree", args[0]);
 
                 // Process response
                 System.out.println("Process issue transaction response.");
