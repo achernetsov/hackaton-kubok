@@ -55,7 +55,8 @@ public class CompletionActContract implements ContractInterface {
     @Transaction
     public CompletionAct issue(CompletionActContext ctx, String executor, String customer, String contractNum,
                                Double SLA, Double moneyAmount) {
-        System.out.println(ctx);
+        System.out.printf("Invoke method CompletionActContract.issue: context = %s, executor = %s, customer = %s, " +
+                "contractNum = %s, SLA = %.2f, moneyAmount = %.2f", ctx, executor, customer, contractNum, SLA, moneyAmount);
 
         // create an instance of the paper
         CompletionAct act = CompletionAct.createInstance(executor, customer, contractNum, SLA, moneyAmount, "");
@@ -63,7 +64,7 @@ public class CompletionActContract implements ContractInterface {
         // Smart contract, rather than paper, moves paper into ISSUED state
         act.setIssued();
 
-        System.out.println(act);
+        System.out.println("Created completion act: " + act);
         // Add the paper to the list of all similar commercial papers in the ledger
         // world state
         ctx.actList.addAct(act);

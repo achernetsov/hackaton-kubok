@@ -16,6 +16,7 @@ public class ActList {
     }
 
     public ActList addAct(CompletionAct act) {
+        System.out.printf("Invoke ActList.addAct: act = %s", act);
         stateList.addState(act);
         return this;
     }

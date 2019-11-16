@@ -1,14 +1,14 @@
 /*
- * SPDX-License-Identifier:
+ *  SPDX-License-Identifier: Apache-2.0
  */
 
-package org.example;
+package org.papernet;
 
-import org.example.ledgerapi.State;
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
 import org.json.JSONObject;
 import org.json.JSONPropertyIgnore;
+import org.papernet.ledgerapi.State;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

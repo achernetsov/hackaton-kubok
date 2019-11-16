@@ -3,9 +3,9 @@ SPDX-License-Identifier: Apache-2.0
 */
 package org.example.ledgerapi;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 import org.json.JSONObject;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * State class. States have a class, unique key, and a lifecycle current state
@@ -17,17 +17,18 @@ public class State {
 
     /**
      * @param {String|Object} class An identifiable class of the instance
-     * @param {keyParts[]} elements to pull together to make a key for the objects
+     * @param {keyParts[]}    elements to pull together to make a key for the objects
      */
     public State() {
 
     }
 
-    String getKey() {
+    public String getKey() {
         return this.key;
     }
 
     public String[] getSplitKey() {
+        System.out.println("Invoke State.getSplitKey(): this.key = " + key);
         return State.splitKey(this.key);
     }
 
@@ -40,7 +41,6 @@ public class State {
      */
     public static byte[] serialize(Object object) {
         String jsonStr = new JSONObject(object).toString();
-        System.out.println(jsonStr);
         return jsonStr.getBytes(UTF_8);
     }
 
@@ -54,6 +54,7 @@ public class State {
     }
 
     public static String[] splitKey(String key) {
+        System.out.println("");
         System.out.println("Splittin gkey " + key + "   " + java.util.Arrays.asList(key.split(":")));
         return key.split(":");
     }
