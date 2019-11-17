@@ -4,14 +4,19 @@
 
 package org.example;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.ledgerapi.State;
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
 import org.json.JSONObject;
 import org.json.JSONPropertyIgnore;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -297,6 +302,19 @@ public class CompletionAct extends State {
 
         return createInstance(uuid, dateTime, name, executor, customer, contractNum, SLA, moneyAmountPlan,
                 moneyAmountFact, rejectReason, state);
+    }
+
+    public static List<CompletionAct> deserializeList(byte[] data) {
+        if (data == null || data.length == 0) {
+            return Collections.emptyList();
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.readValue(data, new TypeReference<List<CompletionAct>>() {
+            });
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static byte[] serialize(CompletionAct paper) {

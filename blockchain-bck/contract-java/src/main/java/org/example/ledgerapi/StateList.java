@@ -39,6 +39,8 @@ public interface StateList {
      */
     public State getState(String key);
 
+    List<State> getStates();
+
     /**
      * Update a state in the list. Puts the new state in world state with
      * appropriate composite key. Note that state defines its own key. A state is

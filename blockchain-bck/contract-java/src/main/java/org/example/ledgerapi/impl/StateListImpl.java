@@ -1,14 +1,20 @@
 package org.example.ledgerapi.impl;
 
-import java.util.Arrays;
-import java.util.List;
-
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.ledgerapi.State;
 import org.example.ledgerapi.StateDeserializer;
 import org.example.ledgerapi.StateList;
 import org.hyperledger.fabric.contract.Context;
 import org.hyperledger.fabric.shim.ChaincodeStub;
 import org.hyperledger.fabric.shim.ledger.CompositeKey;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /*
 SPDX-License-Identifier: Apache-2.0
@@ -21,6 +27,8 @@ SPDX-License-Identifier: Apache-2.0
  * parallel transactions on different states.
  */
 public class StateListImpl implements StateList {
+
+    private static final String UUID_KEY = "uuid";
 
     private Context ctx;
     private String name;
@@ -61,6 +69,22 @@ public class StateListImpl implements StateList {
         System.out.println("stub" + this.ctx.getStub());
         this.ctx.getStub().putState(ledgerKey.toString(), data);
 
+        byte[] uuidsList = stub.getState(UUID_KEY);
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            List<String> uuids;
+            if (uuidsList == null || uuidsList.length == 0) {
+                uuids = new ArrayList<>();
+            } else {
+                uuids = mapper.readValue(uuidsList, new TypeReference<List<String>>() {
+                });
+            }
+            uuids.add(state.getKey());
+            stub.putState(UUID_KEY, mapper.writeValueAsBytes(uuids));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         return this;
     }
 
@@ -80,6 +104,27 @@ public class StateListImpl implements StateList {
             return state;
         } else {
             return null;
+        }
+    }
+
+    @Override
+    public List<State> getStates() {
+        byte[] uuidsList = this.ctx.getStub().getState(UUID_KEY);
+        if (uuidsList == null || uuidsList.length == 0) {
+            return Collections.emptyList();
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            List<String> uuids = mapper.readValue(uuidsList, new TypeReference<List<String>>() {
+            });
+            if (uuids.isEmpty()) {
+                return Collections.emptyList();
+            }
+            return uuids.stream()
+                    .map(this::getState)
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
