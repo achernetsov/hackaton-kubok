@@ -1,7 +1,7 @@
 <template>
   <q-item clickable @click="click">
     <q-item-section avatar>
-      <q-icon name="school" />
+      <q-icon :name="icon" />
     </q-item-section>
     <q-item-section>
       <q-item-label>{{ name }}</q-item-label>
@@ -11,21 +11,20 @@
 </template>
 
 <script>
-    export default {
-        name: "OrganisationMenuItem",
-        props: {
-            route: String,
-            name: String,
-            caption: String,
-        },
-        methods: {
-            click () {
-                this.$router.push(this.route)
-            }
-        }
+export default {
+  name: "OrganisationMenuItem",
+  props: {
+    route: String,
+    name: String,
+    caption: String,
+    icon: String
+  },
+  methods: {
+    click() {
+      this.$router.push(this.route);
     }
+  }
+};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
