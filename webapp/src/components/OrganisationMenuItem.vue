@@ -1,5 +1,5 @@
 <template>
-  <q-item clickable @click="click">
+  <q-item clickable @click="click" class="menu-item">
     <q-item-section avatar>
       <q-icon :name="icon" />
     </q-item-section>
@@ -27,4 +27,27 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style lang="stylus">
+.q-item {
+  transition .4s
+  position relative
+
+  &:after {
+    position absolute
+    content: ''
+    width 0%
+    bottom 0
+    left 0
+    background $secondary
+    transition .4s
+  }
+
+  &:hover {
+    background rgba($primary, 0.35)
+
+    &:after {
+      width 100%;
+      }
+    }
+}
+</style>
