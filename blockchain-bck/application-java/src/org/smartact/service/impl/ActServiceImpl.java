@@ -17,8 +17,6 @@ import java.util.stream.Collectors;
 @Service
 public class ActServiceImpl implements ActService {
 
-    private static final String CONTRACT_ISSUE_METHOD = "issue";
-
     private static final String CONTACT_NAME = "papercontract";
 
     private static final String MAGNETOCORP_PATH = "/home/nchernetsov/go/src/github.com/hyperledger/fabric-samples/commercial-paper/organization/magnetocorp/";
@@ -27,53 +25,10 @@ public class ActServiceImpl implements ActService {
 
     @Override
     public CompletionAct issue(CompletionAct act) {
-        Gateway.Builder builder = Gateway.createBuilder();
-
-        try {
-            // A wallet stores a collection of identities
-            /*Path walletPath = Paths.get(MAGNETOCORP_PATH, "identity", "user", "isabella", "wallet");
-            Wallet wallet = Wallet.createFileSystemWallet(walletPath);
-*/
-            // TODO
-            String userName = "User1@org1.example.com";
-
-            Path connectionProfile = Paths.get(MAGNETOCORP_PATH, "gateway", "networkConnection.yaml");
-
-            // Set connection options on the gateway builder
-            builder.identity(wallet, userName).networkConfig(connectionProfile).discovery(false);
-
-            // Connect to gateway using application specified parameters
-            try (Gateway gateway = builder.connect()) {
-                // Access PaperNet network
-                System.out.println("Use network channel: mychannel.");
-                Network network = gateway.getNetwork("mychannel");
-
-                // Get addressability to commercial paper contract
-                System.out.println("Use org.papernet.commercialpaper smart contract.");
-                Contract contract = network.getContract(CONTACT_NAME, "org.papernet.commercialpaper");
-
-                // Issue commercial paper
-                System.out.println("Submit commercial paper issue transaction.");
-//                byte[] response = contract.submitTransaction("issue", "test completion act №1", "Naprasnii trud", "No money",
-//                        "123456", "87.0", "19293.17", "15038.62");
-
-                byte[] response = contract.submitTransaction(CONTRACT_ISSUE_METHOD,
-                        act.getName(),
-                        act.getExecutor(),
-                        act.getCustomer(),
-                        act.getContractNum() != null ? act.getContractNum() : "",
-                        act.getSLA().toString(),
-                        act.getMoneyAmountPlan() != null ? act.getMoneyAmountPlan().toString() : "0.0",
-                        act.getMoneyAmountFact() != null ? act.getMoneyAmountFact().toString() : "0.0");
-
-                // Process response
-                System.out.println("Process issue transaction response.");
-                return CompletionAct.deserialize(response);
-            }
-        } catch (GatewayException | IOException | TimeoutException | InterruptedException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
+        return invokeTransactionChaincodeMethod("issue", act.getName(), act.getExecutor(), act.getCustomer(),
+                act.getContractNum() != null ? act.getContractNum() : "", act.getSLA().toString(),
+                act.getMoneyAmountPlan() != null ? act.getMoneyAmountPlan().toString() : "0.0",
+                act.getMoneyAmountFact() != null ? act.getMoneyAmountFact().toString() : "0.0");
     }
 
     @Override
@@ -142,9 +97,7 @@ public class ActServiceImpl implements ActService {
 
                 List<String> uuids = CompletionAct.deserializeList(response);
 
-                return uuids.stream()
-                        .map(this::get)
-                        .collect(Collectors.toList());
+                return uuids.stream().map(this::get).collect(Collectors.toList());
             }
         } catch (GatewayException | IOException e) {
             e.printStackTrace();
@@ -155,196 +108,35 @@ public class ActServiceImpl implements ActService {
 
     @Override
     public CompletionAct customerAgree(String uuid) {
-        Gateway.Builder builder = Gateway.createBuilder();
-
-        try {
-            String userName = "User1@org1.example.com";
-
-            Path connectionProfile = Paths.get(MAGNETOCORP_PATH, "gateway", "networkConnection.yaml");
-
-            // Set connection options on the gateway builder
-            builder.identity(wallet, userName).networkConfig(connectionProfile).discovery(false);
-
-            // Connect to gateway using application specified parameters
-            try (Gateway gateway = builder.connect()) {
-                // Access PaperNet network
-                System.out.println("Use network channel: mychannel.");
-                Network network = gateway.getNetwork("mychannel");
-
-                // Get addressability to commercial paper contract
-                System.out.println("Use org.papernet.commercialpaper smart contract.");
-                Contract contract = network.getContract(CONTACT_NAME, "org.papernet.commercialpaper");
-
-                // Issue commercial paper
-                System.out.println("Submit commercial paper issue transaction.");
-                byte[] response = contract.submitTransaction("customerAgree", uuid);
-
-                // Process response
-                return CompletionAct.deserialize(response);
-            }
-        } catch (GatewayException | IOException | TimeoutException | InterruptedException e) {
-            e.printStackTrace();
-            System.exit(-1);
-        }
-        return null;
+        return invokeTransactionChaincodeMethod("customerAgree", uuid);
     }
 
     @Override
     public CompletionAct customerRefuse(String uuid, String rejectReason) {
-        Gateway.Builder builder = Gateway.createBuilder();
-
-        try {
-            // A wallet stores a collection of identities
-            Path walletPath = Paths.get(MAGNETOCORP_PATH, "identity", "user", "isabella", "wallet");
-            Wallet wallet = Wallet.createFileSystemWallet(walletPath);
-
-            String userName = "User1@org1.example.com";
-
-            Path connectionProfile = Paths.get(MAGNETOCORP_PATH, "gateway", "networkConnection.yaml");
-
-            // Set connection options on the gateway builder
-            builder.identity(wallet, userName).networkConfig(connectionProfile).discovery(false);
-
-            // Connect to gateway using application specified parameters
-            try (Gateway gateway = builder.connect()) {
-                // Access PaperNet network
-                System.out.println("Use network channel: mychannel.");
-                Network network = gateway.getNetwork("mychannel");
-
-                // Get addressability to commercial paper contract
-                System.out.println("Use org.papernet.commercialpaper smart contract.");
-                Contract contract = network.getContract(CONTACT_NAME, "org.papernet.commercialpaper");
-
-                // Issue commercial paper
-                System.out.println("Submit commercial paper issue transaction.");
-                byte[] response = contract.submitTransaction("customerRefuse", uuid, rejectReason);
-
-                // Process response
-                System.out.println("Process issue transaction response.");
-                return CompletionAct.deserialize(response);
-            }
-        } catch (GatewayException | IOException | TimeoutException | InterruptedException e) {
-            e.printStackTrace();
-            System.exit(-1);
-        }
-        return null;
+        return invokeTransactionChaincodeMethod("customerRefuse", uuid, rejectReason);
     }
 
     @Override
     public CompletionAct controlAgree(String uuid) {
-        Gateway.Builder builder = Gateway.createBuilder();
-
-        try {
-            String userName = "User1@org1.example.com";
-
-            Path connectionProfile = Paths.get(MAGNETOCORP_PATH, "gateway", "networkConnection.yaml");
-
-            // Set connection options on the gateway builder
-            builder.identity(wallet, userName).networkConfig(connectionProfile).discovery(false);
-
-            // Connect to gateway using application specified parameters
-            try (Gateway gateway = builder.connect()) {
-                // Access PaperNet network
-                System.out.println("Use network channel: mychannel.");
-                Network network = gateway.getNetwork("mychannel");
-
-                // Get addressability to commercial paper contract
-                System.out.println("Use org.papernet.commercialpaper smart contract.");
-                Contract contract = network.getContract(CONTACT_NAME, "org.papernet.commercialpaper");
-
-                // Issue commercial paper
-                System.out.println("Submit commercial paper issue transaction.");
-                byte[] response = contract.submitTransaction("controlAgree", uuid);
-
-                // Process response
-                return CompletionAct.deserialize(response);
-            }
-        } catch (GatewayException | IOException | TimeoutException | InterruptedException e) {
-            e.printStackTrace();
-            System.exit(-1);
-        }
-        return null;
+        return invokeTransactionChaincodeMethod("controlAgree", uuid);
     }
 
     @Override
     public CompletionAct controlRefuse(String uuid, String rejectReason) {
-        Gateway.Builder builder = Gateway.createBuilder();
-
-        try {
-            // A wallet stores a collection of identities
-            Path walletPath = Paths.get(MAGNETOCORP_PATH, "identity", "user", "isabella", "wallet");
-            Wallet wallet = Wallet.createFileSystemWallet(walletPath);
-
-            String userName = "User1@org1.example.com";
-
-            Path connectionProfile = Paths.get(MAGNETOCORP_PATH, "gateway", "networkConnection.yaml");
-
-            // Set connection options on the gateway builder
-            builder.identity(wallet, userName).networkConfig(connectionProfile).discovery(false);
-
-            // Connect to gateway using application specified parameters
-            try (Gateway gateway = builder.connect()) {
-                // Access PaperNet network
-                System.out.println("Use network channel: mychannel.");
-                Network network = gateway.getNetwork("mychannel");
-
-                // Get addressability to commercial paper contract
-                System.out.println("Use org.papernet.commercialpaper smart contract.");
-                Contract contract = network.getContract(CONTACT_NAME, "org.papernet.commercialpaper");
-
-                // Issue commercial paper
-                System.out.println("Submit commercial paper issue transaction.");
-                byte[] response = contract.submitTransaction("controlRefuse", uuid, rejectReason);
-
-                // Process response
-                System.out.println("Process issue transaction response.");
-                return CompletionAct.deserialize(response);
-            }
-        } catch (GatewayException | IOException | TimeoutException | InterruptedException e) {
-            e.printStackTrace();
-            System.exit(-1);
-        }
-        return null;
+        return invokeTransactionChaincodeMethod("controlRefuse", uuid, rejectReason);
     }
 
     @Override
     public CompletionAct accountingAgree(String uuid) {
-        Gateway.Builder builder = Gateway.createBuilder();
-
-        try {
-            String userName = "User1@org1.example.com";
-
-            Path connectionProfile = Paths.get(MAGNETOCORP_PATH, "gateway", "networkConnection.yaml");
-
-            // Set connection options on the gateway builder
-            builder.identity(wallet, userName).networkConfig(connectionProfile).discovery(false);
-
-            // Connect to gateway using application specified parameters
-            try (Gateway gateway = builder.connect()) {
-                // Access PaperNet network
-                System.out.println("Use network channel: mychannel.");
-                Network network = gateway.getNetwork("mychannel");
-
-                // Get addressability to commercial paper contract
-                System.out.println("Use org.papernet.commercialpaper smart contract.");
-                Contract contract = network.getContract(CONTACT_NAME, "org.papernet.commercialpaper");
-
-                // Issue commercial paper
-                System.out.println("Submit commercial paper issue transaction.");
-                byte[] response = contract.submitTransaction("accountingAgree", uuid);
-
-                // Process response
-                return CompletionAct.deserialize(response);
-            }
-        } catch (GatewayException | IOException | TimeoutException | InterruptedException e) {
-            e.printStackTrace();
-            System.exit(-1);
-        }
-        return null;
+        return invokeTransactionChaincodeMethod("accountingAgree", uuid);
     }
 
     @Override
     public CompletionAct accountingRefuse(String uuid, String rejectReason) {
+        return invokeTransactionChaincodeMethod("accountingRefuse", uuid, rejectReason);
+    }
+
+    private CompletionAct invokeTransactionChaincodeMethod(String methodName, String... parameters) {
         Gateway.Builder builder = Gateway.createBuilder();
 
         try {
@@ -371,7 +163,7 @@ public class ActServiceImpl implements ActService {
 
                 // Issue commercial paper
                 System.out.println("Submit commercial paper issue transaction.");
-                byte[] response = contract.submitTransaction("accountingRefuse", uuid, rejectReason);
+                byte[] response = contract.submitTransaction(methodName, parameters);
 
                 // Process response
                 System.out.println("Process issue transaction response.");
@@ -385,7 +177,7 @@ public class ActServiceImpl implements ActService {
     }
 
     @PostConstruct
-    public void init() {
+    private void init() {
         try {
             // A wallet stores a collection of identities
             Path walletPath = Paths.get(MAGNETOCORP_PATH, "identity", "user", "isabella", "wallet");
