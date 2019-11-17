@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.papernet.CompletionAct;
 import org.smartact.controller.CompletionActDto;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -20,7 +21,7 @@ public class Test {
         completionAct.setKey();
         completionAct.setContractNum("123");
         completionAct.setCustomer("customer");
-        completionAct.setDateTime(LocalDateTime.now().toString());
+        completionAct.setDateTime(Instant.now().toEpochMilli());
         completionAct.setExecutor("executor");
         completionAct.setMoneyAmountFact(5.);
         completionAct.setMoneyAmountPlan(5.);

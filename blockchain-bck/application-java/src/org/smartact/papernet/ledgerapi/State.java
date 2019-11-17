@@ -3,6 +3,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 package org.smartact.papernet.ledgerapi;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.json.JSONObject;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -27,7 +28,13 @@ public class State {
         return this.key;
     }
 
+    @JsonIgnore
     public String[] ackSplitKey() {
+        return State.splitKey(this.key);
+    }
+
+    @JsonIgnore
+    public String[] getSplitKey() {
         return State.splitKey(this.key);
     }
 

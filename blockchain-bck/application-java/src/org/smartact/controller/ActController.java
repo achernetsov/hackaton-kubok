@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.smartact.service.ActService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,6 +17,8 @@ public class ActController {
 
     private final ActService actService;
 
+    private CompletionActDto lastAct;
+
     public ActController(ActService actService) {
         this.actService = actService;
     }
@@ -25,7 +28,19 @@ public class ActController {
     CompletionActDto issue(@RequestBody CompletionActDto completionActDto) {
         log.info("processing {}", completionActDto);
         CompletionAct issued = actService.issue(completionActDto.toAct());
-        return CompletionActDto.from(issued);
+        CompletionActDto issue = CompletionActDto.from(issued);
+        lastAct = issue;
+        return issue;
+    }
+
+    @GetMapping(path = "/last")
+    public CompletionActDto getLastAct() {
+        List<CompletionAct> acts = actService.getActs();
+        if (acts.isEmpty()) {
+            return null;
+        }
+        acts.sort(Comparator.comparing(CompletionAct::getDateTime).reversed());
+        return CompletionActDto.from(acts.get(0));
     }
 
     @GetMapping(path = "/{uuid}")

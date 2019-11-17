@@ -23,15 +23,17 @@ public class ActServiceImpl implements ActService {
 
     private static final String MAGNETOCORP_PATH = "/home/nchernetsov/go/src/github.com/hyperledger/fabric-samples/commercial-paper/organization/magnetocorp/";
 
+    private Wallet wallet;
+
     @Override
     public CompletionAct issue(CompletionAct act) {
         Gateway.Builder builder = Gateway.createBuilder();
 
         try {
             // A wallet stores a collection of identities
-            Path walletPath = Paths.get(MAGNETOCORP_PATH, "identity", "user", "isabella", "wallet");
+            /*Path walletPath = Paths.get(MAGNETOCORP_PATH, "identity", "user", "isabella", "wallet");
             Wallet wallet = Wallet.createFileSystemWallet(walletPath);
-
+*/
             // TODO
             String userName = "User1@org1.example.com";
 
@@ -59,10 +61,10 @@ public class ActServiceImpl implements ActService {
                         act.getName(),
                         act.getExecutor(),
                         act.getCustomer(),
-                        act.getContractNum(),
+                        act.getContractNum() != null ? act.getContractNum() : "",
                         act.getSLA().toString(),
-                        act.getMoneyAmountPlan() != null ? act.getMoneyAmountPlan().toString() : "",
-                        act.getMoneyAmountFact() != null ? act.getMoneyAmountFact().toString() : "");
+                        act.getMoneyAmountPlan() != null ? act.getMoneyAmountPlan().toString() : "0.0",
+                        act.getMoneyAmountFact() != null ? act.getMoneyAmountFact().toString() : "0.0");
 
                 // Process response
                 System.out.println("Process issue transaction response.");
@@ -80,8 +82,8 @@ public class ActServiceImpl implements ActService {
 
         try {
             // A wallet stores a collection of identities
-            Path walletPath = Paths.get(MAGNETOCORP_PATH, "identity", "user", "isabella", "wallet");
-            Wallet wallet = Wallet.createFileSystemWallet(walletPath);
+            /*Path walletPath = Paths.get(MAGNETOCORP_PATH, "identity", "user", "isabella", "wallet");
+            Wallet wallet = Wallet.createFileSystemWallet(walletPath);*/
 
             String userName = "User1@org1.example.com";
 
@@ -116,8 +118,8 @@ public class ActServiceImpl implements ActService {
 
         try {
             // A wallet stores a collection of identities
-            Path walletPath = Paths.get(MAGNETOCORP_PATH, "identity", "user", "isabella", "wallet");
-            Wallet wallet = Wallet.createFileSystemWallet(walletPath);
+            /*Path walletPath = Paths.get(MAGNETOCORP_PATH, "identity", "user", "isabella", "wallet");
+            Wallet wallet = Wallet.createFileSystemWallet(walletPath);*/
 
             String userName = "User1@org1.example.com";
 
@@ -156,7 +158,7 @@ public class ActServiceImpl implements ActService {
         try {
             // A wallet stores a collection of identities
             Path walletPath = Paths.get(MAGNETOCORP_PATH, "identity", "user", "isabella", "wallet");
-            Wallet wallet = Wallet.createFileSystemWallet(walletPath);
+            wallet = Wallet.createFileSystemWallet(walletPath);
 
             // Location of credentials to be stored in the wallet
             Path credentialPath = Paths.get(MAGNETOCORP_PATH, "..", "..", "..", "basic-network", "crypto-config",

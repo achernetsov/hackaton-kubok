@@ -5,6 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.papernet.CompletionAct;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 @Data
@@ -52,7 +55,7 @@ public class CompletionActDto {
                 act.getKey(),
                 act.getState(),
                 act.getUuid(),
-                act.getDateTime().toString(),
+                Instant.ofEpochMilli(act.getDateTime()).atZone(ZoneId.systemDefault()).toLocalDate().toString(),
                 act.getName(),
                 act.getExecutor(),
                 act.getCustomer(),
@@ -65,7 +68,7 @@ public class CompletionActDto {
     }
 
     public CompletionAct toAct() {
-        return CompletionAct.createInstance(uuid != null ? uuid.toString() : null, dateTime, name, executor,
+        return CompletionAct.createInstance(uuid != null ? uuid.toString() : null, null, name, executor,
                 customer, contractNum, SLA, moneyAmountPlan, moneyAmountFact, rejectReason, state);
     }
 }

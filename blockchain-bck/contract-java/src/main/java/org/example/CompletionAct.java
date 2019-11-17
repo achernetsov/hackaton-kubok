@@ -14,6 +14,7 @@ import org.hyperledger.fabric.contract.annotation.Property;
 import org.json.JSONPropertyIgnore;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -41,8 +42,7 @@ public class CompletionAct extends State {
     private UUID uuid;
 
     @Property()
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
-    private LocalDateTime dateTime;
+    private Long dateTime;
 
     @Property()
     private String name;
@@ -185,12 +185,12 @@ public class CompletionAct extends State {
     }
 
     @JsonProperty("dateTime")
-    public LocalDateTime getDateTime() {
+    public Long getDateTime() {
         return dateTime;
     }
 
-    public CompletionAct setDateTime(String dateTime) {
-        this.dateTime = LocalDateTime.parse(dateTime);
+    public CompletionAct setDateTime(Long dateTime) {
+        this.dateTime = dateTime;
         return this;
     }
 
@@ -331,13 +331,13 @@ public class CompletionAct extends State {
     /**
      * Factory method to create a commercial paper object
      */
-    public static CompletionAct createInstance(String uuid, String dateTime, String name, String executor, String customer,
+    public static CompletionAct createInstance(String uuid, Long dateTime, String name, String executor, String customer,
                                                String contractNum, Double SLA, Double moneyAmountPlan, Double moneyAmountFact,
                                                String rejectReason, String state) {
         System.out.println("Invoke method CompletionAct.createInstance");
         return new CompletionAct()
                 .setUuid(uuid == null ? UUID.randomUUID().toString() : uuid)
-                .setDateTime(dateTime == null ? LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME) : dateTime)
+                .setDateTime(dateTime == null ? Instant.now().toEpochMilli() : dateTime)
                 .setName(name)
                 .setExecutor(executor).setCustomer(customer).setContractNum(contractNum)
                 .setSLA(SLA).setMoneyAmountPlan(moneyAmountPlan).setMoneyAmountFact(moneyAmountFact)
