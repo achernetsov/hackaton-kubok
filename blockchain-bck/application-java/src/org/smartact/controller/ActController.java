@@ -53,4 +53,16 @@ public class ActController {
                 .map(CompletionActDto::from)
                 .collect(Collectors.toList());
     }
+
+    @PutMapping(path = "/{uuid}/customerAgree")
+    public CompletionActDto customerAgree(@PathVariable("uuid") String uuid) {
+        CompletionAct act = actService.customerAgree(uuid);
+        return CompletionActDto.from(act);
+    }
+
+    @PutMapping(path = "/{uuid}/customerRefuse")
+    public CompletionActDto customerRefuse(@PathVariable("uuid") String uuid, @RequestBody RefuseDto refuseDto) {
+        CompletionAct act = actService.customerRefuse(uuid, refuseDto.getReason());
+        return CompletionActDto.from(act);
+    }
 }

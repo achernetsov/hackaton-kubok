@@ -12,4 +12,8 @@ public interface ActService {
     CompletionAct get(String uuid);
 
     List<CompletionAct> getActs();
+
+    CompletionAct customerAgree(String uuid);
+
+    CompletionAct customerRefuse(String uuid, String rejectReason);
 }
