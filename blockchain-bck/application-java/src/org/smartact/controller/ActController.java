@@ -6,8 +6,8 @@ import org.slf4j.LoggerFactory;
 import org.smartact.service.ActService;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("act")
@@ -21,23 +21,24 @@ public class ActController {
     }
 
     @PostMapping
-    public @ResponseBody CompletionActDto issue(@RequestBody CompletionActDto completionActDto) {
+    public @ResponseBody
+    CompletionActDto issue(@RequestBody CompletionActDto completionActDto) {
         log.info("processing {}", completionActDto);
-
-        // TODO remove (mock)
-        completionActDto.setUuid(UUID.randomUUID());
-        completionActDto.setDateTime(LocalDateTime.now().toString());
-        completionActDto.setState(CompletionAct.ISSUED);
-
-        return completionActDto;
-
-        // TODO
-//        CompletionAct issued = actService.issue(completionActDto.toAct());
-//        return CompletionActDto.from(issued);
+        CompletionAct issued = actService.issue(completionActDto.toAct());
+        return CompletionActDto.from(issued);
     }
 
-    @GetMapping
-    public void getAct() {
+    @GetMapping(path = "/{uuid}")
+    public CompletionActDto getAct(@PathVariable("uuid") String uuid) {
+        CompletionAct act = actService.get(uuid);
+        return CompletionActDto.from(act);
+    }
 
+    @GetMapping(path = "/all")
+    public List<CompletionActDto> getActs() {
+        List<CompletionAct> acts = actService.getActs();
+        return acts.stream()
+                .map(CompletionActDto::from)
+                .collect(Collectors.toList());
     }
 }
