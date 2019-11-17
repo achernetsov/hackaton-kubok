@@ -2,6 +2,7 @@ package org.smartact.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hyperledger.fabric.contract.annotation.Property;
 import org.papernet.CompletionAct;
 
@@ -10,13 +11,14 @@ import java.util.UUID;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class CompletionActDto {
     String key;
 
     private String state;
 
     
-    private UUID uuid;
+    private String uuid;
 
     
     private String dateTime;
@@ -50,7 +52,7 @@ public class CompletionActDto {
         return new CompletionActDto(
                 act.getKey(),
                 act.getState(),
-                act.getUuid(),
+                act.getUuid().toString(),
                 act.getDateTime().toString(),
                 act.getName(),
                 act.getExecutor(),
