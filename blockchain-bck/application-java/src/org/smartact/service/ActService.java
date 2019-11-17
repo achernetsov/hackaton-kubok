@@ -1,7 +1,9 @@
 package org.smartact.service;
 
+import org.papernet.CompletionAct;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ActService {
+public interface ActService {
+    CompletionAct issue(CompletionAct act);
 }

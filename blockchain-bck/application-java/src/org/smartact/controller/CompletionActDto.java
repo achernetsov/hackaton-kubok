@@ -64,4 +64,9 @@ public class CompletionActDto {
                 act.getRejectReason()
         );
     }
+
+    public CompletionAct toAct() {
+        // TODO
+        return new CompletionAct();
+    }
 }
