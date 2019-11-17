@@ -13,11 +13,10 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("act")
 public class ActController {
+
     private static final Logger log = LoggerFactory.getLogger(ActController.class);
 
     private final ActService actService;
-
-    private CompletionActDto lastAct;
 
     public ActController(ActService actService) {
         this.actService = actService;
@@ -28,9 +27,7 @@ public class ActController {
     CompletionActDto issue(@RequestBody CompletionActDto completionActDto) {
         log.info("processing {}", completionActDto);
         CompletionAct issued = actService.issue(completionActDto.toAct());
-        CompletionActDto issue = CompletionActDto.from(issued);
-        lastAct = issue;
-        return issue;
+        return CompletionActDto.from(issued);
     }
 
     @GetMapping(path = "/last")
