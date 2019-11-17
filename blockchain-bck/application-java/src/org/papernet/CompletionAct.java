@@ -11,6 +11,7 @@ import org.json.JSONPropertyIgnore;
 import org.papernet.ledgerapi.State;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -24,11 +25,42 @@ public class CompletionAct extends State {
     public final static String CUSTOMER_REFUSED = "CUSTOMER_REFUSED";
     public final static String CONTROL_AGREED = "CONTROL_AGREED";
     public final static String CONTROL_REFUSED = "CONTROL_REFUSED";
-    public final static String PAID = "PAID";
+    public final static String ACCOUNTING_AGREED = "ACCOUNTING_AGREED";
+    public final static String ACCOUNTING_REFUSED = "ACCOUNTING_REFUSED";
     public final static String CLOSED = "CLOSED";
 
     @Property()
     private String state = "";
+
+    @Property()
+    private UUID uuid;
+
+    @Property()
+    private LocalDateTime dateTime;
+
+    @Property()
+    private String name;
+
+    @Property()
+    private String executor;
+
+    @Property()
+    private String customer;
+
+    @Property()
+    private String contractNum;
+
+    @Property()
+    private Double SLA;
+
+    @Property()
+    private Double moneyAmountPlan;
+
+    @Property()
+    private Double moneyAmountFact;
+
+    @Property()
+    private String rejectReason;
 
     public String getState() {
         return state;
@@ -65,8 +97,13 @@ public class CompletionAct extends State {
     }
 
     @JSONPropertyIgnore()
-    public boolean isPaid() {
-        return this.state.equals(CompletionAct.PAID);
+    public boolean isAccountingAgreed() {
+        return this.state.equals(CompletionAct.ACCOUNTING_AGREED);
+    }
+
+    @JSONPropertyIgnore()
+    public boolean isAccountingRefused() {
+        return this.state.equals(CompletionAct.ACCOUNTING_REFUSED);
     }
 
     @JSONPropertyIgnore()
@@ -99,8 +136,13 @@ public class CompletionAct extends State {
         return this;
     }
 
-    public CompletionAct sedPaid() {
-        this.state = CompletionAct.PAID;
+    public CompletionAct setAccountingAgreed() {
+        this.state = CompletionAct.ACCOUNTING_AGREED;
+        return this;
+    }
+
+    public CompletionAct setAccountingRefused() {
+        this.state = CompletionAct.ACCOUNTING_REFUSED;
         return this;
     }
 
@@ -109,31 +151,8 @@ public class CompletionAct extends State {
         return this;
     }
 
-    @Property()
-    private UUID uuid;
-
-    @Property()
-    private LocalDateTime dateTime;
-
-    @Property()
-    private String executor;
-
-    @Property()
-    private String customer;
-
-    @Property()
-    private String contractNum;
-
-    @Property()
-    private Double SLA;
-
-    @Property()
-    private Double moneyAmount;
-
     public CompletionAct() {
         super();
-        this.uuid = UUID.randomUUID();
-        this.dateTime = LocalDateTime.now();
     }
 
     public CompletionAct setKey() {
@@ -145,8 +164,18 @@ public class CompletionAct extends State {
         return uuid;
     }
 
+    public CompletionAct setUuid(String uuid) {
+        this.uuid = UUID.fromString(uuid);
+        return this;
+    }
+
     public LocalDateTime getDateTime() {
         return dateTime;
+    }
+
+    public CompletionAct setDateTime(String dateTime) {
+        this.dateTime = LocalDateTime.parse(dateTime);
+        return this;
     }
 
     public String getExecutor() {
@@ -155,6 +184,15 @@ public class CompletionAct extends State {
 
     public CompletionAct setExecutor(String executor) {
         this.executor = executor;
+        return this;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public CompletionAct setName(String name) {
+        this.name = name;
         return this;
     }
 
@@ -185,27 +223,48 @@ public class CompletionAct extends State {
         return this;
     }
 
-    public Double getMoneyAmount() {
-        return moneyAmount;
+    public Double getMoneyAmountPlan() {
+        return moneyAmountPlan;
     }
 
-    public CompletionAct setMoneyAmount(Double moneyAmount) {
-        this.moneyAmount = moneyAmount;
+    public CompletionAct setMoneyAmountPlan(Double moneyAmountPlan) {
+        this.moneyAmountPlan = moneyAmountPlan;
+        return this;
+    }
+
+    public Double getMoneyAmountFact() {
+        return moneyAmountFact;
+    }
+
+    public CompletionAct setMoneyAmountFact(Double moneyAmountFact) {
+        this.moneyAmountFact = moneyAmountFact;
+        return this;
+    }
+
+    public String getRejectReason() {
+        return rejectReason;
+    }
+
+    public CompletionAct setRejectReason(String rejectReason) {
+        this.rejectReason = rejectReason;
         return this;
     }
 
     @Override
     public String toString() {
         return "CompletionAct{" +
-                "state='" + this.getState() + '\'' +
-                ", uuid=" + this.getUuid() +
-                ", dateTime=" + this.getDateTime() +
-                ", executor='" + this.getExecutor() + '\'' +
-                ", customer='" + this.getCustomer() + '\'' +
-                ", contractNum='" + this.getContractNum() + '\'' +
-                ", SLA=" + this.getSLA() +
-                ", moneyAmount=" + this.getMoneyAmount() +
-                ", key='" + this.getKey() + '\'' +
+                "state='" + state + '\'' +
+                ", uuid=" + uuid +
+                ", dateTime=" + dateTime +
+                ", name='" + name + '\'' +
+                ", executor='" + executor + '\'' +
+                ", customer='" + customer + '\'' +
+                ", contractNum='" + contractNum + '\'' +
+                ", SLA=" + SLA +
+                ", moneyAmountPlan=" + moneyAmountPlan +
+                ", moneyAmountFact=" + moneyAmountFact +
+                ", rejectReason='" + rejectReason + '\'' +
+                ", key='" + key + '\'' +
                 '}';
     }
 
@@ -215,16 +274,29 @@ public class CompletionAct extends State {
      * @param {Buffer} data to form back into the object
      */
     public static CompletionAct deserialize(byte[] data) {
-        JSONObject json = new JSONObject(new String(data, UTF_8));
+        String inputString = new String(data, UTF_8);
+        if (inputString.isEmpty()) {
+            throw new IllegalArgumentException("CompletionAct.deserialize: input data is empty (not JSON)");
+        }
 
+        System.out.println("CompletionAct.deserialize: " + inputString);
+
+        JSONObject json = new JSONObject(inputString);
+
+        String uuid = json.getString("uuid");
+        String dateTime = json.getString("dateTime");
         String state = json.getString("state");
+        String name = json.getString("name");
         String executor = json.getString("executor");
         String customer = json.getString("customer");
         String contractNum = json.getString("contractNum");
         Double SLA = json.getDouble("SLA");
-        Double moneyAmount = json.getDouble("moneyAmount");
+        Double moneyAmountPlan = json.getDouble("moneyAmountPlan");
+        Double moneyAmountFact = json.getDouble("moneyAmountFact");
+        String rejectReason = json.getString("rejectReason");
 
-        return createInstance(executor, customer, contractNum, SLA, moneyAmount, state);
+        return createInstance(uuid, dateTime, name, executor, customer, contractNum, SLA, moneyAmountPlan,
+                moneyAmountFact, rejectReason, state);
     }
 
     public static byte[] serialize(CompletionAct paper) {
@@ -234,10 +306,16 @@ public class CompletionAct extends State {
     /**
      * Factory method to create a commercial paper object
      */
-    public static CompletionAct createInstance(String executor, String customer, String contractNum,
-                                               Double SLA, Double moneyAmount, String state) {
+    public static CompletionAct createInstance(String uuid, String dateTime, String name, String executor, String customer,
+                                               String contractNum, Double SLA, Double moneyAmountPlan, Double moneyAmountFact,
+                                               String rejectReason, String state) {
         System.out.println("Invoke method CompletionAct.createInstance");
-        return new CompletionAct().setExecutor(executor).setCustomer(customer).setContractNum(contractNum).setSLA(SLA)
-                .setMoneyAmount(moneyAmount).setKey().setState(state);
+        return new CompletionAct()
+                .setUuid(uuid == null ? UUID.randomUUID().toString() : uuid)
+                .setDateTime(dateTime == null ? LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME) : dateTime)
+                .setName(name)
+                .setExecutor(executor).setCustomer(customer).setContractNum(contractNum)
+                .setSLA(SLA).setMoneyAmountPlan(moneyAmountPlan).setMoneyAmountFact(moneyAmountFact)
+                .setRejectReason(rejectReason).setKey().setState(state);
     }
 }
