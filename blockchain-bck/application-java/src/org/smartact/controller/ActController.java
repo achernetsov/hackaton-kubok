@@ -65,4 +65,28 @@ public class ActController {
         CompletionAct act = actService.customerRefuse(uuid, refuseDto.getReason());
         return CompletionActDto.from(act);
     }
+
+    @PutMapping(path = "/{uuid}/controlAgree")
+    public CompletionActDto controlAgree(@PathVariable("uuid") String uuid) {
+        CompletionAct act = actService.controlAgree(uuid);
+        return CompletionActDto.from(act);
+    }
+
+    @PutMapping(path = "/{uuid}/controlRefuse")
+    public CompletionActDto controlRefuse(@PathVariable("uuid") String uuid, @RequestBody RefuseDto refuseDto) {
+        CompletionAct act = actService.controlRefuse(uuid, refuseDto.getReason());
+        return CompletionActDto.from(act);
+    }
+
+    @PutMapping(path = "/{uuid}/accountingAgree")
+    public CompletionActDto accountingAgree(@PathVariable("uuid") String uuid) {
+        CompletionAct act = actService.accountingAgree(uuid);
+        return CompletionActDto.from(act);
+    }
+
+    @PutMapping(path = "/{uuid}/accountingRefuse")
+    public CompletionActDto accountingRefuse(@PathVariable("uuid") String uuid, @RequestBody RefuseDto refuseDto) {
+        CompletionAct act = actService.accountingRefuse(uuid, refuseDto.getReason());
+        return CompletionActDto.from(act);
+    }
 }
