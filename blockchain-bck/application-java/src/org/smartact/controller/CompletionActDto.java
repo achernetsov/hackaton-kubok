@@ -2,6 +2,7 @@ package org.smartact.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hyperledger.fabric.contract.annotation.Property;
 import org.papernet.CompletionAct;
 
@@ -10,6 +11,7 @@ import java.util.UUID;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class CompletionActDto {
     String key;
 
