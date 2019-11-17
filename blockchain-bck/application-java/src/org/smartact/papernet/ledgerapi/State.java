@@ -1,10 +1,8 @@
 /*
 SPDX-License-Identifier: Apache-2.0
 */
-package org.papernet.ledgerapi;
+package org.smartact.papernet.ledgerapi;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.json.JSONObject;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -25,13 +23,11 @@ public class State {
 
     }
 
-    @JsonProperty("key")
     public String getKey() {
         return this.key;
     }
 
-    @JsonIgnore
-    public String[] getSplitKey() {
+    public String[] ackSplitKey() {
         return State.splitKey(this.key);
     }
 

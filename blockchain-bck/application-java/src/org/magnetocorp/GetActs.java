@@ -1,7 +1,3 @@
-/*
-SPDX-License-Identifier: Apache-2.0
-*/
-
 package org.magnetocorp;
 
 import org.hyperledger.fabric.gateway.*;
@@ -10,10 +6,10 @@ import org.papernet.CompletionAct;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeoutException;
 
-public class Issue {
+public class GetActs {
 
     private static final String ENVKEY = "CONTRACT_NAME";
 
@@ -50,19 +46,15 @@ public class Issue {
                 System.out.println("Use org.papernet.commercialpaper smart contract.");
                 Contract contract = network.getContract(contractName, "org.papernet.commercialpaper");
 
-                // Issue commercial paper
-                System.out.println("Submit commercial paper issue transaction.");
-                byte[] response = contract.submitTransaction("issue", "test completion act №1", "Naprasnii trud", "No money",
-                        "123456", "87.0", "19293.17", "15038.62");
+                byte[] response = contract.evaluateTransaction("queryAllActs");
 
-                // Process response
-                System.out.println("Process issue transaction response.");
-                CompletionAct act = CompletionAct.deserialize(response);
-                System.out.println(act);
+                List<String> acts = CompletionAct.deserializeList(response);
+                System.out.println(acts);
             }
-        } catch (GatewayException | IOException | TimeoutException | InterruptedException e) {
+        } catch (GatewayException | IOException e) {
             e.printStackTrace();
             System.exit(-1);
         }
     }
+
 }

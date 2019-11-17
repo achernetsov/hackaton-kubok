@@ -9,6 +9,7 @@ import org.hyperledger.fabric.contract.ContractInterface;
 import org.hyperledger.fabric.contract.annotation.*;
 import org.hyperledger.fabric.shim.ChaincodeStub;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -224,8 +225,16 @@ public class CompletionActContract implements ContractInterface {
         return act;
     }
 
-    public CompletionAct getAct(CompletionActContext ctx, String uuid) {
+    @Transaction()
+    public CompletionAct queryAct(CompletionActContext ctx, String uuid) {
         String paperKey = State.makeKey(new String[]{uuid});
         return ctx.actList.getAct(paperKey);
+    }
+
+    @Transaction()
+    public String[] queryAllActs(CompletionActContext ctx) {
+        List<String> actUuids = ctx.actList.getActs();
+        System.out.println("CompletionActContract.queryAllActs: " + actUuids);
+        return actUuids.toArray(new String[0]);
     }
 }

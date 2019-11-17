@@ -4,17 +4,22 @@
 
 package org.example;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.ledgerapi.State;
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
-import org.json.JSONObject;
 import org.json.JSONPropertyIgnore;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 @DataType()
 public class CompletionAct extends State {
@@ -36,6 +41,7 @@ public class CompletionAct extends State {
     private UUID uuid;
 
     @Property()
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     private LocalDateTime dateTime;
 
     @Property()
@@ -72,41 +78,49 @@ public class CompletionAct extends State {
     }
 
     @JSONPropertyIgnore()
+    @JsonIgnore
     public boolean isIssued() {
         return this.state.equals(CompletionAct.ISSUED);
     }
 
     @JSONPropertyIgnore()
+    @JsonIgnore
     public boolean isCustomerAgreed() {
         return this.state.equals(CompletionAct.CUSTOMER_AGREED);
     }
 
     @JSONPropertyIgnore()
+    @JsonIgnore
     public boolean isCustomerRefused() {
         return this.state.equals(CompletionAct.CUSTOMER_REFUSED);
     }
 
     @JSONPropertyIgnore()
+    @JsonIgnore
     public boolean isControlAgreed() {
         return this.state.equals(CompletionAct.CONTROL_AGREED);
     }
 
     @JSONPropertyIgnore()
+    @JsonIgnore
     public boolean isControlRefused() {
         return this.state.equals(CompletionAct.CONTROL_REFUSED);
     }
 
     @JSONPropertyIgnore()
+    @JsonIgnore
     public boolean isAccountingAgreed() {
         return this.state.equals(CompletionAct.ACCOUNTING_AGREED);
     }
 
     @JSONPropertyIgnore()
+    @JsonIgnore
     public boolean isAccountingRefused() {
         return this.state.equals(CompletionAct.ACCOUNTING_REFUSED);
     }
 
     @JSONPropertyIgnore()
+    @JsonIgnore
     public boolean isClosed() {
         return this.state.equals(CompletionAct.CLOSED);
     }
@@ -160,6 +174,7 @@ public class CompletionAct extends State {
         return this;
     }
 
+    @JsonProperty("uuid")
     public UUID getUuid() {
         return uuid;
     }
@@ -169,6 +184,7 @@ public class CompletionAct extends State {
         return this;
     }
 
+    @JsonProperty("dateTime")
     public LocalDateTime getDateTime() {
         return dateTime;
     }
@@ -178,6 +194,7 @@ public class CompletionAct extends State {
         return this;
     }
 
+    @JsonProperty("executor")
     public String getExecutor() {
         return executor;
     }
@@ -187,6 +204,7 @@ public class CompletionAct extends State {
         return this;
     }
 
+    @JsonProperty("name")
     public String getName() {
         return name;
     }
@@ -196,6 +214,7 @@ public class CompletionAct extends State {
         return this;
     }
 
+    @JsonProperty("customer")
     public String getCustomer() {
         return customer;
     }
@@ -205,6 +224,7 @@ public class CompletionAct extends State {
         return this;
     }
 
+    @JsonProperty("contractNum")
     public String getContractNum() {
         return contractNum;
     }
@@ -214,6 +234,7 @@ public class CompletionAct extends State {
         return this;
     }
 
+    @JsonProperty("SLA")
     public Double getSLA() {
         return SLA;
     }
@@ -223,6 +244,7 @@ public class CompletionAct extends State {
         return this;
     }
 
+    @JsonProperty("moneyAmountPlan")
     public Double getMoneyAmountPlan() {
         return moneyAmountPlan;
     }
@@ -232,6 +254,7 @@ public class CompletionAct extends State {
         return this;
     }
 
+    @JsonProperty("moneyAmountFact")
     public Double getMoneyAmountFact() {
         return moneyAmountFact;
     }
@@ -241,6 +264,7 @@ public class CompletionAct extends State {
         return this;
     }
 
+    @JsonProperty("rejectReason")
     public String getRejectReason() {
         return rejectReason;
     }
@@ -274,33 +298,34 @@ public class CompletionAct extends State {
      * @param {Buffer} data to form back into the object
      */
     public static CompletionAct deserialize(byte[] data) {
-        String inputString = new String(data, UTF_8);
-        if (inputString.isEmpty()) {
-            throw new IllegalArgumentException("CompletionAct.deserialize: input data is empty (not JSON)");
+        if (data == null || data.length == 0) {
+            throw new IllegalArgumentException("CompletionAct.deserialize: input byte[] is empty (not JSON)");
         }
-
-        System.out.println("CompletionAct.deserialize: " + inputString);
-
-        JSONObject json = new JSONObject(inputString);
-
-        String uuid = json.getString("uuid");
-        String dateTime = json.getString("dateTime");
-        String state = json.getString("state");
-        String name = json.getString("name");
-        String executor = json.getString("executor");
-        String customer = json.getString("customer");
-        String contractNum = json.getString("contractNum");
-        Double SLA = json.getDouble("SLA");
-        Double moneyAmountPlan = json.getDouble("moneyAmountPlan");
-        Double moneyAmountFact = json.getDouble("moneyAmountFact");
-        String rejectReason = json.getString("rejectReason");
-
-        return createInstance(uuid, dateTime, name, executor, customer, contractNum, SLA, moneyAmountPlan,
-                moneyAmountFact, rejectReason, state);
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            CompletionAct completionAct = objectMapper.readValue(data, CompletionAct.class);
+            completionAct.setKey();
+            return completionAct;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public static byte[] serialize(CompletionAct paper) {
-        return State.serialize(paper);
+    public static List<String> deserializeList(byte[] data) {
+        if (data == null || data.length == 0) {
+            return Collections.emptyList();
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            String[] actUuids = mapper.readValue(data, String[].class);
+            return Arrays.asList(actUuids);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static byte[] serialize(CompletionAct act) {
+        return State.serialize(act);
     }
 
     /**

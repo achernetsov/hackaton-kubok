@@ -3,9 +3,10 @@ SPDX-License-Identifier: Apache-2.0
 */
 package org.example.ledgerapi;
 
-import org.json.JSONObject;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * State class. States have a class, unique key, and a lifecycle current state
@@ -23,10 +24,12 @@ public class State {
 
     }
 
+    @JsonProperty("key")
     public String getKey() {
         return this.key;
     }
 
+    @JsonIgnore
     public String[] getSplitKey() {
         System.out.println("Invoke State.getSplitKey(): this.key = " + key);
         return State.splitKey(this.key);
@@ -40,8 +43,12 @@ public class State {
      * @return {buffer} buffer with the data to store
      */
     public static byte[] serialize(Object object) {
-        String jsonStr = new JSONObject(object).toString();
-        return jsonStr.getBytes(UTF_8);
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.writeValueAsBytes(object);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
