@@ -4,12 +4,10 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.example;
 
-import org.example.ledgerapi.State;
 import org.example.ledgerapi.StateList;
 import org.hyperledger.fabric.contract.Context;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ActList {
 
@@ -31,6 +29,10 @@ public class ActList {
 
     public List<String> getActs() {
         return this.stateList.getUuids();
+    }
+
+    public String getLastAddedAct() {
+        return this.stateList.getLastAddedUuid();
     }
 
     public ActList updateAct(CompletionAct act) {

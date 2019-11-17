@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /*
 SPDX-License-Identifier: Apache-2.0
@@ -118,6 +117,16 @@ public class StateListImpl implements StateList {
             });
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public String getLastAddedUuid() {
+        List<String> uuids = getUuids();
+        if (uuids.isEmpty()) {
+            return null;
+        } else {
+            return uuids.get(uuids.size() - 1);
         }
     }
 

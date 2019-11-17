@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.smartact.service.ActService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,12 +31,8 @@ public class ActController {
 
     @GetMapping(path = "/last")
     public CompletionActDto getLastAct() {
-        List<CompletionAct> acts = actService.getActs();
-        if (acts.isEmpty()) {
-            return null;
-        }
-        acts.sort(Comparator.comparing(CompletionAct::getDateTime).reversed());
-        return CompletionActDto.from(acts.get(0));
+        CompletionAct lastAddedAct = actService.getLastAddedAct();
+        return CompletionActDto.from(lastAddedAct);
     }
 
     @GetMapping(path = "/{uuid}")

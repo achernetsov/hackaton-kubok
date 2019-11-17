@@ -237,4 +237,9 @@ public class CompletionActContract implements ContractInterface {
         System.out.println("CompletionActContract.queryAllActs: " + actUuids);
         return actUuids.toArray(new String[0]);
     }
+
+    @Transaction()
+    public String queryLastAddedAct(CompletionActContext ctx) {
+        return ctx.actList.getLastAddedAct();
+    }
 }

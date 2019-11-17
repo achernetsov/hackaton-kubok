@@ -1,5 +1,6 @@
 package org.smartact.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hyperledger.fabric.gateway.*;
 import org.papernet.CompletionAct;
 import org.smartact.service.ActService;
@@ -102,6 +103,45 @@ public class ActServiceImpl implements ActService {
         } catch (GatewayException | IOException e) {
             e.printStackTrace();
             System.exit(-1);
+        }
+        return null;
+    }
+
+    @Override
+    public CompletionAct getLastAddedAct() {
+        Gateway.Builder builder = Gateway.createBuilder();
+        try {
+            String userName = "User1@org1.example.com";
+
+            Path connectionProfile = Paths.get(MAGNETOCORP_PATH, "gateway", "networkConnection.yaml");
+
+            // Set connection options on the gateway builder
+            builder.identity(wallet, userName).networkConfig(connectionProfile).discovery(false);
+
+            // Connect to gateway using application specified parameters
+            try (Gateway gateway = builder.connect()) {
+                // Access PaperNet network
+                System.out.println("Use network channel: mychannel.");
+                Network network = gateway.getNetwork("mychannel");
+
+                // Get addressability to commercial paper contract
+                System.out.println("Use org.papernet.commercialpaper smart contract.");
+                Contract contract = network.getContract(CONTACT_NAME, "org.papernet.commercialpaper");
+
+                byte[] response = contract.evaluateTransaction("queryLastAddedAct");
+                if (response == null || response.length == 0) {
+                    return null;
+                }
+                ObjectMapper mapper = new ObjectMapper();
+                try {
+                    String lastAddedActUuid = mapper.readValue(response, String.class);
+                    return get(lastAddedActUuid);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        } catch (GatewayException | IOException e) {
+            e.printStackTrace();
         }
         return null;
     }

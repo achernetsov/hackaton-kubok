@@ -25,4 +25,6 @@ public interface ActService {
     CompletionAct accountingAgree(String uuid);
 
     CompletionAct accountingRefuse(String uuid, String rejectReason);
+
+    CompletionAct getLastAddedAct();
 }
