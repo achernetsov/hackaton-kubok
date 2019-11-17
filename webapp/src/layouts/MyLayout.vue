@@ -15,12 +15,7 @@
           Kubok App
         </q-toolbar-title>
 
-        <div>Kubok Framework v{{ $q.version }}</div>
-        <q-btn
-          v-if="isAuthenticated"
-          label="Выйти из аккаунта"
-          @click="logout"
-        />
+        <q-btn v-if="isAuthenticated" label="Выйти" @click="logout" />
       </q-toolbar>
     </q-header>
 
@@ -71,3 +66,14 @@ export default {
   }
 };
 </script>
+
+<style lang="stylus">
+.q-layout
+  background $secondary
+.q-drawer__content
+  background $black !important
+
+  * {
+    color $text-default
+  }
+</style>
