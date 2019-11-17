@@ -10,7 +10,7 @@ import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
 import org.json.JSONObject;
 import org.json.JSONPropertyIgnore;
-import org.papernet.ledgerapi.State;
+import org.smartact.papernet.ledgerapi.State;
 
 import java.io.IOException;
 import java.time.LocalDateTime;

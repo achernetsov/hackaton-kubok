@@ -2,7 +2,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-package org.papernet;
+package org.smartact.papernet;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -10,7 +10,7 @@ import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
 import org.json.JSONObject;
 import org.json.JSONPropertyIgnore;
-import org.papernet.ledgerapi.State;
+import org.smartact.papernet.ledgerapi.State;
 
 @DataType()
 public class CommercialPaper extends State {

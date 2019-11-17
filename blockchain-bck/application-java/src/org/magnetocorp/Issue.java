@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 package org.magnetocorp;
 
 import org.hyperledger.fabric.gateway.*;
-import org.hyperledger.fabric.sdk.QueryByChaincodeRequest;
 import org.papernet.CompletionAct;
 
 import java.io.IOException;
