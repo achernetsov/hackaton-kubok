@@ -12,10 +12,15 @@
         />
 
         <q-toolbar-title>
-          Quasar App
+          Kubok App
         </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <div>Kubok Framework v{{ $q.version }}</div>
+        <q-btn
+          v-if="isAuthenticated"
+          label="Выйти из аккаунта"
+          @click="logout"
+        />
       </q-toolbar>
     </q-header>
 
@@ -26,9 +31,12 @@
       content-class="bg-grey-2"
     >
       <q-list>
-        <q-item-label header>Select organization:</q-item-label>
+        <q-item-label header>Главное меню:</q-item-label>
         <organisation-menu-item
-          v-for="(org, index) in organisations" :key="index" v-bind="org"/>
+          v-for="(act, index) in routes"
+          :key="index"
+          v-bind="act"
+        />
       </q-list>
     </q-drawer>
 
@@ -40,19 +48,26 @@
 
 <script>
 import OrganisationMenuItem from "../components/OrganisationMenuItem";
+import { mapGetters, mapMutations } from "vuex";
 export default {
   name: "MyLayout",
-    components: {OrganisationMenuItem},
-    data() {
+  components: { OrganisationMenuItem },
+  data() {
     return {
       leftDrawerOpen: false,
-        organisations: [
-            { name: "Executor", route: "/executor" },
-            { name: "Consumer" },
-            { name: "Control" },
-            { name: "Accounting" },
-        ]
+      routes: [{ name: "Создать Акт", route: "/act", icon: "create" }]
     };
+  },
+
+  computed: {
+    ...mapGetters({
+      isAuthenticated: "user/isAuthenticated"
+    })
+  },
+  methods: {
+    ...mapMutations({
+      logout: "user/logout"
+    })
   }
 };
 </script>
