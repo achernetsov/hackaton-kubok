@@ -29,12 +29,8 @@ public class ActList {
         return (CompletionAct) this.stateList.getState(paperKey);
     }
 
-    public List<CompletionAct> getActs() {
-        List<State> states = this.stateList.getStates();
-        System.out.println("ActList.getActs: states = " + states);
-        return states.stream()
-                .map(state -> (CompletionAct) state)
-                .collect(Collectors.toList());
+    public List<String> getActs() {
+        return this.stateList.getUuids();
     }
 
     public ActList updateAct(CompletionAct act) {

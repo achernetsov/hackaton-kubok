@@ -39,7 +39,7 @@ public interface StateList {
      */
     public State getState(String key);
 
-    List<State> getStates();
+    List<String> getUuids();
 
     /**
      * Update a state in the list. Puts the new state in world state with

@@ -232,9 +232,9 @@ public class CompletionActContract implements ContractInterface {
     }
 
     @Transaction()
-    public List<CompletionAct> queryAllActs(CompletionActContext ctx) {
-        List<CompletionAct> acts = ctx.actList.getActs();
-        System.out.println("CompletionActContract.queryAllActs: " + acts);
-        return acts;
+    public String[] queryAllActs(CompletionActContext ctx) {
+        List<String> actUuids = ctx.actList.getActs();
+        System.out.println("CompletionActContract.queryAllActs: " + actUuids);
+        return actUuids.toArray(new String[0]);
     }
 }

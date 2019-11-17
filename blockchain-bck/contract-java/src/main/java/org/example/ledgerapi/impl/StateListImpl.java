@@ -44,7 +44,6 @@ public class StateListImpl implements StateList {
         this.ctx = ctx;
         this.name = listName;
         this.deserializer = deserializer;
-
     }
 
     /**
@@ -108,21 +107,15 @@ public class StateListImpl implements StateList {
     }
 
     @Override
-    public List<State> getStates() {
+    public List<String> getUuids() {
         byte[] uuidsList = this.ctx.getStub().getState(UUID_KEY);
         if (uuidsList == null || uuidsList.length == 0) {
             return Collections.emptyList();
         }
         ObjectMapper mapper = new ObjectMapper();
         try {
-            List<String> uuids = mapper.readValue(uuidsList, new TypeReference<List<String>>() {
+            return mapper.readValue(uuidsList, new TypeReference<List<String>>() {
             });
-            if (uuids.isEmpty()) {
-                return Collections.emptyList();
-            }
-            return uuids.stream()
-                    .map(this::getState)
-                    .collect(Collectors.toList());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -48,7 +48,7 @@ public class GetActs {
 
                 byte[] response = contract.evaluateTransaction("queryAllActs");
 
-                List<CompletionAct> acts = CompletionAct.deserializeList(response);
+                List<String> acts = CompletionAct.deserializeList(response);
                 System.out.println(acts);
             }
         } catch (GatewayException | IOException e) {
